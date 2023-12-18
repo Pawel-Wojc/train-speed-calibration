@@ -1,0 +1,5 @@
+{
+    "port": 30100,
+    "interace":"ens33" ,
+    "client" : 1
+    }
