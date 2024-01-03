@@ -1,9 +1,13 @@
 #include <iostream>
- #include <time.h>
- #include <unistd.h>
- #include <fstream>
- #include <nlohmann/json.hpp>
+#include <time.h>
+#include <unistd.h>
+#include <fstream>
+#include <nlohmann/json.hpp>
 #include <thread>
+
+#include "gps_sending.h"
+#include "wheel_sending.h"
+
 
 
 int64_t getTimestamp(const std::string& tekst) {
@@ -13,17 +17,19 @@ int64_t getTimestamp(const std::string& tekst) {
     // Konwertujemy ciąg znaków na int64_t
     int64_t timestamp;
     try {
+       // std::cout<<str<<std::endl;
         timestamp = std::stoll(str);
+
     } catch (const std::exception& e) {
         // Obsługa błędu konwersji (np. ciąg znaków nie zawiera liczby)
-        std::cerr << "Błąd konwersji: " << e.what() << std::endl;
+        std::cerr << "Błąd konwersji: " <<e.what() << std::endl;
         timestamp = 0; // Domyślna wartość w przypadku błędu
     }
 
     return timestamp;
 }
 
-int64_t getCurrentTimestamp() {
+    int64_t getCurrentTimestamp() {
       // Pobieramy aktualny czas
     auto currentTime = std::chrono::system_clock::now();
 
@@ -36,50 +42,50 @@ int64_t getCurrentTimestamp() {
 int32_t main(int argc, char *argv[]) {
 
     std::int64_t start_timestamp = getCurrentTimestamp();
-    std::cout << "Aktualny timestamp: " << start_timestamp << std::endl;
+    std::cout << "start_timestamp: " << start_timestamp << std::endl;
 
-    // //reading position
-     std::ifstream position_file("2023-12-03_adamlog_short");
+    //reading position
+    std::ifstream gps_file("2023-12-03_adamlog_short");
 
 
-     std::string line;
-     std::getline(position_file, line);
+    std::string gps_line;
+    std::getline(gps_file, gps_line);
 
-    std::int64_t time_difference = start_timestamp-getTimestamp(line);
 
+
+
+
+    std::int64_t time_difference = start_timestamp-getTimestamp(gps_line);
+    std::cout << "time_difference: " << time_difference << std::endl;
     
+    // std::cout <<getCurrentTimestamp()<<"spie sekunda" <<std::endl;
+    // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    // std::cout <<getCurrentTimestamp()<<"spie -0.02s" <<std::endl;
+    //  std::this_thread::sleep_for(std::chrono::milliseconds(-2));
+    //  std::cout <<getCurrentTimestamp()<<"koniec" <<std::endl;
+    
+    //synchronization two files of logs
 
-    for (int i=0; i<200;i++) {   
-         std::string line;
-         std::getline(position_file, line);
-         //std::string sendframe = line;
 
-        // int64_t time_difference2 = start_timestamp-getTimestamp(line);
-        // std::cout << "Roznica:"<< time_difference <<" Teraz roznica:" << start_timestamp-getTimestamp(line)<< std::endl;
-        // std::cout << "Roznica2:"<< getCurrentTimestamp()-time_difference2 -getTimestamp(line)<<std::endl;
-         
-        // if (getCurrentTimestamp()-time_difference>start_timestamp-getTimestamp(line)){
-           if (getTimestamp(line)<getCurrentTimestamp()-time_difference) {
-           
-            std::cout << "Roznica:"<< getCurrentTimestamp()-getTimestamp(line)<<std::endl;
-            std::cout << "Start Timestamp:"<< getCurrentTimestamp()-time_difference<<std::endl;
-            //std::cout << line;
-         }else {
+
+
+    while (std::getline(gps_file, gps_line)) {   
+        
+       
+
+
+        std::int64_t wait = (getTimestamp(gps_line)+time_difference)-getCurrentTimestamp();
+        std::cout <<"wait:"<<wait << "    ";
+        std::this_thread::sleep_for(std::chrono::milliseconds(wait));
+        std::cout << gps_line<< (getTimestamp(gps_line)+time_difference)-getCurrentTimestamp()<<std::endl;
             
-        //    int64_t difference =  getCurrentTimestamp()-time_difference<start_timestamp-getTimestamp(line);
-
-        //     std::this_thread::sleep_for(std::chrono::milliseconds(difference));
-
-        //     std::cout << line;
-         }
+         };
          
          //std::cout << "Wyslano: "<< sendframe<<  std::endl;
          //std::cout << getTimestamp(sendframe)<<std::endl;
         //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-     };
+     
     
-
-    std::cin >> line;
     return 0;
 
 
