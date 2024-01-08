@@ -2,6 +2,6 @@
 #define NAZWAKLASY_H
 #include <cstdint>
 #include <iostream>
-int64_t getTimestamp(const std::string& tekst);
+void gps_sending (std::ifstream&, int64_t);
 
 #endif

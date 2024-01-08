@@ -1,8 +1,5 @@
 #include <iostream>
-#include <cstdint>
-
-#include "gps_sending.h"
-
+#include <chrono>
 int64_t getTimestamp(const std::string& tekst) {
     // Pobieramy pierwsze 13 znaków z tekstu
     std::string str = tekst.substr(0, 13);
@@ -20,4 +17,14 @@ int64_t getTimestamp(const std::string& tekst) {
     }
 
     return timestamp;
+}
+
+int64_t getCurrentTimestamp() {
+    // Pobieramy aktualny czas
+    auto currentTime = std::chrono::system_clock::now();
+
+    // Zamieniamy na milisekundy od epoki
+    auto timestampMillis = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime.time_since_epoch()).count();
+
+    return timestampMillis;
 }

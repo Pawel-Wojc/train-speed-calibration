@@ -1,6 +1,6 @@
 {
     "port": 30100,
-    "interace":"ens33" ,
+    "interace":"eth0" ,
     "client" : 1,
     "position_file":"../Dane/data_00/2023-12-03_pos",
     "log_short" : "../Dane/data_00/2023-12-03_adamlog_short" 

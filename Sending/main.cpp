@@ -1,94 +1,78 @@
 #include <iostream>
-#include <time.h>
 #include <unistd.h>
-#include "netfunctions.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
-#include <inttypes.h>
 #include <thread>
-#include <sstream>
 
-using jsonf = nlohmann::json;
+#include "gps_sending.h"
+#include "wheel_sending.h"
+#include "time_provider.h"
 
-
-
-std::vector<std::string> pokaz (std::string &inputString) {
-    const char* charArray = "POL=";
-    std::vector<std::string> tokens;
-    // Zmienna pomocnicza do przechowywania jednej wartości
-    std::string token;
-    // Iterujemy przez każdy znak w stringu
-    for (char ch : inputString) {
-        // Jeśli znak to '|', dodajemy dotychczasowy token do wektora i zerujemy token
-
-        if (ch == '|' || ch =='S' || ch == 'G') {
-            tokens.push_back(token);
-            token.clear();      
-        } else {
-            // W przeciwnym razie dodajemy znak do aktualnego tokena
-            if (strchr(charArray, ch)){continue;}
-            token += ch;
-        }
-    }
-    // Dodajemy ostatni token, który może być na końcu stringa
-    if (!token.empty()) {
-        tokens.push_back(token);
-    }
-    return tokens;
-    }
+void runthreads (std::ifstream& gps_file, std::ifstream& wheel_file, int64_t roznica){
+    std::cout << "uruchomiono, roznica: "<< roznica << std::endl ;
+    std::thread t1(gps_sending, std::ref(gps_file), roznica);
+    t1.join();
+}
 
 int32_t main(int argc, char *argv[]) {
 
-    std::ifstream myfile("settings.json");
-    jsonf jsondata = jsonf::parse(myfile);
 
+    // bierzemy pierwsza linie z obu plikow
+    std::ifstream gps_file("2023-12-03_adamlog_short");
+    std::string gps_line;
+    std::getline(gps_file, gps_line);
 
-    //reading position
-    std::ifstream position_file(jsondata["position_file"]);
+    std::ifstream wheel_file("2023-12-03_pos");
+    std::string wheel_line;
+    std::getline(wheel_file, wheel_line);
 
+    // odczytuje timestamp z tych lini 
 
-    std::string line;
-    std::getline(position_file, line);
-
-    //std::cout << line<< std::endl;
-
-    //std::vector<std::string> tokens = pokaz(line);
-    
-    
-    //for (int i =0;i< tokens.size(); i++){
-
-        //std::cout <<i<< " : " << tokens[i] << std::endl;
-
-   // }
-
-    //std::string iface = "ens33";
-    std::string iface = jsondata["interace"];
-    std::string ipb = getIfBroadcastAddr(iface);
-    //int32_t client = 1;    
-    int32_t client = jsondata["client"];      
-    //int32_t port = 30100;
-    int32_t port = jsondata["port"];
-    
-    std::cout <<"Interfejs: " << iface << " Ip Broadcast: "<< ipb << "Port:  " << port << std::endl;
-    startReceiving (client,ipb, port);
-
-
-
-    while (true){   
-        std::string line;
-        std::getline(position_file, line);
-        std::string sendframe = line;
-
-        std::cout << "Wyslano: "<< sendframe<<  std::endl;
-
-
-        std::vector<char> sendframevec(sendframe.begin(), sendframe.end());
-        sendUdpBroadcast (ipb,port,sendframevec); //int32_t sendUdpBroadcast(std::string addr, int32_t port, std::vector<char> data)
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        std::cout<< std::endl;
+    int64_t gps_start_timestamp = getTimestamp (gps_line);
+    int64_t wheel_start_timestamp = getTimestamp (wheel_line);
+    int64_t absolute_time_difference ;
+    if (gps_start_timestamp < wheel_start_timestamp){ //pierwszy jest sygnał z gps
+            absolute_time_difference = getCurrentTimestamp()-gps_start_timestamp;
+            runthreads (gps_file,wheel_file, absolute_time_difference);
+    }else{
+            absolute_time_difference = getCurrentTimestamp()-wheel_start_timestamp;
+            runthreads (gps_file,wheel_file, absolute_time_difference);
     }
+
     
-    return 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // std::int64_t start_timestamp = getCurrentTimestamp();
+    // std::cout << "start_timestamp: " << start_timestamp << std::endl;
+    // std::ifstream gps_file("2023-12-03_adamlog_short");
+    // std::string gps_line;
+    // std::getline(gps_file, gps_line);
+    // std::int64_t time_difference = start_timestamp-getTimestamp(gps_line);
+    // std::cout << "time_difference: " << time_difference << std::endl;
+    
+    // std::cout <<getCurrentTimestamp()<<"spie sekunda" <<std::endl;
+    // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    // std::cout <<getCurrentTimestamp()<<"spie -0.02s" <<std::endl;
+    //  std::this_thread::sleep_for(std::chrono::milliseconds(-2));
+    //  std::cout <<getCurrentTimestamp()<<"koniec" <<std::endl;
+    
+    //synchronization two files of logs
+
+
+
+
 
 
 }
