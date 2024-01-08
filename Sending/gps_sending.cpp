@@ -2,27 +2,24 @@
 #include <time.h>
 #include <unistd.h>
 #include <fstream>
-
 #include <thread>
+#include <nlohmann/json.hpp>
 
+#include "netfunctions.h"
 #include "gps_sending.h"
 #include "time_provider.h"
+using jsonf = nlohmann::json;
 
 
-
-void gps_sending (std::ifstream& gps_file, int64_t roznica){
-    // std::int64_t start_timestamp = getCurrentTimestamp();   
-
-     std::string gps_line;
-    // std::getline(gps_file, gps_line);
-
-    // std::int64_t time_difference = start_timestamp-getTimestamp(gps_line);
-    // std::cout << "time_difference: " << time_difference << std::endl;
-
-    // std::cout << "start_timestamp: " << start_timestamp << std::endl;
-
+void gps_sending (std::ifstream& gps_file, int64_t time_difference){
+    std::string gps_line;
    
-    std::int64_t time_difference = roznica;
+    std::ifstream settings("settings.json");
+    jsonf jsondata = jsonf::parse(settings);
+    std::string iface = jsondata["interace"];
+    std::string ipb = getIfBroadcastAddr(iface); 
+    int32_t client = jsondata["client"];      
+    int32_t port = jsondata["port"];
 
     
     while (std::getline(gps_file, gps_line)) {   
@@ -32,9 +29,16 @@ void gps_sending (std::ifstream& gps_file, int64_t roznica){
         std::this_thread::sleep_for(std::chrono::milliseconds(wait));
         //std::cout << "DIFF: "<< (getTimestamp(gps_line)+time_difference)-getCurrentTimestamp()<<std::endl;
         std::cout << gps_line <<std::endl ;
+
+
+
+
+        std::vector<char> sendframevec(gps_line.begin(), gps_line.end());
+        sendUdpBroadcast (ipb,port,sendframevec);
+
+
+
+
         };
-         
-         //std::cout << "Wyslano: "<< sendframe<<  std::endl;
-         //std::cout << getTimestamp(sendframe)<<std::endl;
-        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
 }

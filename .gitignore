@@ -1,6 +1,9 @@
 .devcontainer
 nlohmann
 
+Dockerfile
+.dockerignore
+
 
 
 *.zip
