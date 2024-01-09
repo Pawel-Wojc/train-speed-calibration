@@ -10,6 +10,7 @@ Dockerfile
 .vscode
 # Prerequisites
 *.d
+*.vs
 
 # Compiled Object files
 *.slo
