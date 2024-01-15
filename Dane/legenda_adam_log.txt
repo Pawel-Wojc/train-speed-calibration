@@ -4,9 +4,11 @@ liczba impulsów
 impulsy przeliczone na dystans w metrach
 obwód koła
 ilość zebów zamontowanych na kole
+średnica koła 840 do 880 mm
 
 
 short 
+
 
 
 TIMESTAMP 				CZESTOTLIWOSC	 PREDKOSC(KM/H)	  	ILSOC IMPULSOW	DYSTANS		OBWOD KOLA	ILOSC ZEBOW
