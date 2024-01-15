@@ -4,12 +4,18 @@
 #include <thread>
 #include <chrono>
 
+void calibrate(std::vector<gps> gps_data){
+    std::cout << "calibrate "<<std::endl;
+
+}
+
 void tocalibrate (std::vector<gps>& gps_data, int& speed_strike) {
     std::cout<< std::endl<<  " rozmiar: "<<gps_data.size()<<" czas: "<<gps_data.back().gps_timestamp  << " speed: " << gps_data.back().gps_speed<< std::endl;
 bool speed_strike_bool = gps_data[gps_data.size()-2].gps_speed == gps_data.back().gps_speed;
     if (speed_strike_bool){
         speed_strike = speed_strike +1;
     }else {
+        std::cout << "speed strike: "<< speed_strike << std::endl;
         if (speed_strike = 60 ){
             calibrate(gps_data);
         }
@@ -19,10 +25,7 @@ bool speed_strike_bool = gps_data[gps_data.size()-2].gps_speed == gps_data.back(
 
 }
 
-void calibrate(std::vector<gps> gps_data){
-    std::cout << "calibrate "<<std::endl;
 
-}
 
 
 void dataparsing(std::vector<gps>& gps_data, std::vector<wheel>& wheel_data) {
