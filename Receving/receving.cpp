@@ -68,9 +68,6 @@ wheel readwheel(char *rBuffer){
     }
 
 void start_receving(std::vector<gps>& gps_data, std::vector<wheel>& wheel_data) {
-
-
-
     std::ifstream settings("settings.json");
     jsonf jsondata = jsonf::parse(settings);
     std::string iface = jsondata["interace"];
@@ -81,33 +78,24 @@ void start_receving(std::vector<gps>& gps_data, std::vector<wheel>& wheel_data) 
 
     
 
-startReceiving (client,ipb, port);
-while (true){
+    startReceiving (client,ipb, port);
+    while (true){
 
- #define DATA_BUFF_SIZE 20000 
-        char *rBuffer = new char [DATA_BUFF_SIZE+1];
-        struct sockaddr_in resp;
-        memset((char *)&resp, 0 , sizeof(sockaddr_in));
-        socklen_t slen = 0 ;
-        int32_t rLenght = recvfrom (client, rBuffer, DATA_BUFF_SIZE , 0 , (struct sockaddr *)& resp, &slen);
-        //std::cout << "Odebrnano dlugosc : " << rLenght << " Wiadomosc: "<< rBuffer ;
-        //std::cout << std::endl; 
-                    // int rLenght = 69;
-                    // //const char* input = "1701624000192 LOG=01|910.123456|118|14296573|514148|2733.185609|76|";
-                    // const char* input = "1701624000193	POS=63|52.423230 N|18.597110 E|2023-12-03 18:20:04|7211991|2023-11-29 17:49:09|;";
-                
-                    // // Alokacja pamięci dla rBuffer i kopiowanie zawartości input
-                    // char* rBuffer = new char[strlen(input) + 1];
-                    // strcpy(rBuffer, input);
-        if (rLenght == 95) {
-            /* gps */
-            gps_data.push_back(readgps(rBuffer));
-        }else if (rLenght == 63)
-        {
-            /* wheel */
-            wheel_data.push_back(readwheel(rBuffer));
+    #define DATA_BUFF_SIZE 20000 
+            char *rBuffer = new char [DATA_BUFF_SIZE+1];
+            struct sockaddr_in resp;
+            memset((char *)&resp, 0 , sizeof(sockaddr_in));
+            socklen_t slen = 0 ;
+            int32_t rLenght = recvfrom (client, rBuffer, DATA_BUFF_SIZE , 0 , (struct sockaddr *)& resp, &slen);
             
-        }
-        
-}
+            if (rLenght == 95) {
+                /* gps */
+                gps_data.push_back(readgps(rBuffer));
+            }else if (rLenght == 63)
+            {
+                /* wheel */
+                wheel_data.push_back(readwheel(rBuffer));              
+            }
+            
+    }
 }
