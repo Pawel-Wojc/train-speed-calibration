@@ -17,7 +17,7 @@ gps readgps(char *rBuffer){
 
     std::getline(stream, token, '=');
     std::getline(stream, token, '|');
-    gps.gps_speed = std::stoi(token);
+    gps.gps_speed = std::stoi(token) * 1.852;
 
     std::getline(stream, token, 'N');
     gps.gps_n = std::stof(token);

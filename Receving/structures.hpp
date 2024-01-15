@@ -3,7 +3,7 @@
 
 struct gps {
     long long gps_timestamp;
-    int gps_speed; //pos (predkosc wezly)
+    float gps_speed; //pos (predkosc wezly)
     float gps_n;
     float gps_e;
     int gps_distance;
