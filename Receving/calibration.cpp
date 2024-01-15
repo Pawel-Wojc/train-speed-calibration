@@ -15,8 +15,8 @@ bool speed_strike_bool = gps_data[gps_data.size()-2].gps_speed == gps_data.back(
     if (speed_strike_bool){
         speed_strike = speed_strike +1;
     }else {
-        std::cout << "speed strike: "<< speed_strike << std::endl;
-        if (speed_strike = 60 ){
+        std::cout<<"speed strike:" << speed_strike << std::endl;
+        if (speed_strike == 60 ){
             calibrate(gps_data);
         }
         gps_data.clear();
@@ -24,9 +24,6 @@ bool speed_strike_bool = gps_data[gps_data.size()-2].gps_speed == gps_data.back(
     }
 
 }
-
-
-
 
 void dataparsing(std::vector<gps>& gps_data, std::vector<wheel>& wheel_data) {
 while (gps_data.empty()){

@@ -88,10 +88,10 @@ void start_receving(std::vector<gps>& gps_data, std::vector<wheel>& wheel_data) 
             socklen_t slen = 0 ;
             int32_t rLenght = recvfrom (client, rBuffer, DATA_BUFF_SIZE , 0 , (struct sockaddr *)& resp, &slen);
             
-            if (rLenght == 95) {
+            if (rLenght >= 90) {
                 /* gps */
                 gps_data.push_back(readgps(rBuffer));
-            }else if (rLenght == 63)
+            }else if (rLenght > 60 && rLenght < 70)
             {
                 /* wheel */
                 wheel_data.push_back(readwheel(rBuffer));              
