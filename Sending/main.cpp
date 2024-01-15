@@ -24,12 +24,15 @@ int32_t main(int argc, char *argv[]) {
     std::ifstream settings("settings.json");
     jsonf jsondata = jsonf::parse(settings);
 
+    std::string gps_log_path = jsondata["gps_log"];
     // bierzemy pierwsza linie z obu plikow
-    std::ifstream gps_file("2023-12-03_adamlog_short");
+    std::ifstream gps_file(gps_log_path);
     std::string gps_line;
     std::getline(gps_file, gps_line);
 
-    std::ifstream wheel_file("2023-12-03_pos");
+    //std::ifstream wheel_file("2023-12-03_pos");
+    std::string wheel_log_path = jsondata["wheel_log"];  
+    std::ifstream wheel_file(wheel_log_path);  
     std::string wheel_line;
     std::getline(wheel_file, wheel_line);
 
