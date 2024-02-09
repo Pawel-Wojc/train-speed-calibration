@@ -28,7 +28,7 @@ void gps_sending (std::ifstream& gps_file, int64_t time_difference){
         //std::cout <<"wait:"<<wait << "    " << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(wait));
         //std::cout << "DIFF: "<< (getTimestamp(gps_line)+time_difference)-getCurrentTimestamp()<<std::endl;
-        std::cout << gps_line <<std::endl ;
+        //std::cout << gps_line <<std::endl ;
 
 
 

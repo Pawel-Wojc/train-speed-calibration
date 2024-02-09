@@ -90,11 +90,14 @@ void start_receving(std::vector<gps>& gps_data, std::vector<wheel>& wheel_data) 
             
             if (rLenght >= 90) {
                 /* gps */
+                std::cout << rBuffer << std::endl;
                 gps_data.push_back(readgps(rBuffer));
+                
             }else if (rLenght > 60 && rLenght < 70)
             {
                 /* wheel */
-                wheel_data.push_back(readwheel(rBuffer));              
+                std::cout << rBuffer << std::endl;
+                wheel_data.push_back(readwheel(rBuffer));  
             }
             
     }
