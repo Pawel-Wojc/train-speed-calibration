@@ -3,14 +3,11 @@
 #include <fstream>
 #include "nlohmann/json.hpp"
 #include <thread>
-
 #include "calibration.hpp"
 #include "receving.hpp"
 #include "structures.hpp"
 
-
 using jsonf = nlohmann::json;
-
 
 void runthreads (std::vector<gps>& gps_data, std::vector<wheel>& wheel_data){
 
@@ -21,9 +18,7 @@ void runthreads (std::vector<gps>& gps_data, std::vector<wheel>& wheel_data){
 }
 
 int32_t main(int argc, char *argv[]) {
-
     std::vector<gps> gps_data;
     std::vector<wheel> wheel_data;
     runthreads(gps_data, wheel_data);
-
 }

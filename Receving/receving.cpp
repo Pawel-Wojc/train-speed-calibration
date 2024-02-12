@@ -67,6 +67,12 @@ wheel readwheel(char *rBuffer){
     return wheel;
     }
 
+void show_gps (gps gps){
+    std::string output = std::to_string(gps.gps_timestamp) + "   POS="+ std::to_string(gps.gps_speed) 
+        +"|"+std::to_string(gps.gps_n) +" N|" + std::to_string(gps.gps_e) + " E|" + std::to_string(gps.gps_distance) + "|;";
+    std::cout<< output;
+}
+
 void start_receving(std::vector<gps>& gps_data, std::vector<wheel>& wheel_data) {
     std::ifstream settings("settings.json");
     jsonf jsondata = jsonf::parse(settings);
@@ -90,14 +96,17 @@ void start_receving(std::vector<gps>& gps_data, std::vector<wheel>& wheel_data) 
             
             if (rLenght >= 90) {
                 /* gps */
-                std::cout << rBuffer << std::endl;
-                gps_data.push_back(readgps(rBuffer));
+                gps temp = readgps(rBuffer);
+                gps_data.push_back(temp);
+                std::cout << "GPS: " << temp.gps_timestamp << " SPEED: " << std::round(temp.gps_speed) << std::endl;
                 
-            }else if (rLenght > 60 && rLenght < 70)
+            }else if (rLenght > 60 && rLenght < 75)
             {
                 /* wheel */
-                std::cout << rBuffer << std::endl;
-                wheel_data.push_back(readwheel(rBuffer));  
+                wheel temp = readwheel(rBuffer);
+                wheel_data.push_back(temp); 
+                std::cout << "WHE: " << temp.wheel_timestamp << " SPEED: " << temp.wheel_speed << " CIRC: " << temp.wheel_circumference << " TOOTH: " << temp.wheel_tooth << std::endl <<  std::endl;
+
             }
             
     }

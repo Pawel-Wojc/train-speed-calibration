@@ -12,7 +12,7 @@ int64_t getTimestamp(const std::string& tekst) {
 
     } catch (const std::exception& e) {
         // Obsługa błędu konwersji (np. ciąg znaków nie zawiera liczby)
-        std::cerr << "Błąd konwersji: " <<e.what() << std::endl;
+        std::cerr << "Błąd konwersji: " <<e.what() <<"("<< str <<")" << std::endl;
         timestamp = 0; // Domyślna wartość w przypadku błędu
     }
 

@@ -3,7 +3,7 @@
 
 struct gps {
     long long gps_timestamp;
-    float gps_speed; //pos (predkosc wezly)
+    float gps_speed; //pos predkosc w wezlach, przeliczona na km/h
     float gps_n;
     float gps_e;
     int gps_distance;

@@ -26,17 +26,17 @@ double readfile(std::string filePath);
 std::string wheel_obj_to_string (wheel wheel);
 void recalibrate_tooth(std::vector<wheel>& wheel_vector, int tooth);
 void recalibrate_circumference(std::vector<wheel>& wheel_vector, double circumference);
-
+void save_setting (double circumference, int tooth);
 
 //funkcja glowna wysyłajaca
 void wheel_sending (std::ifstream& wheel_file, int64_t time_difference){
-     std::string wheel_line;
+    std::string wheel_line;
 
     std::ifstream settings("settings.json");
     jsonf jsondata = jsonf::parse(settings);
     std::string iface = jsondata["interace"];
     std::string ipb = getIfBroadcastAddr(iface); 
-    int32_t client = jsondata["client"];      
+    //int32_t client = jsondata["client"];      //unused variable
     int32_t port = jsondata["port"];
 
     //zapisujemy wszystkie dane z loga
@@ -45,12 +45,18 @@ void wheel_sending (std::ifstream& wheel_file, int64_t time_difference){
         wheel_data.push_back(string_to_wheel_obj(wheel_line));
     }
 
+
+    //zapisuje ustawienia obecnego loga bo byly rozne z zebami 76 lub 126
+    save_setting(wheel_data[0].wheel_circumference, wheel_data[0].wheel_tooth);
+
     //po całym logu 
     for (wheel item : wheel_data){
 
         //tutaj okreslamy timestamp, zeby log nie byl wysylany randomowa a zgodnie z czasem ktory w nim jest
         std::int64_t wait = (item.wheel_timestamp+time_difference)-getCurrentTimestamp();
         std::this_thread::sleep_for(std::chrono::milliseconds(wait));
+
+        
 
         //sprawdzamy czy ustawienie zebow sie zmienilo czy nie
         //jesli tak to przeliczamy predkosc z dalszej czesci loga, tak samo dla obwodu
@@ -82,17 +88,45 @@ void wheel_sending (std::ifstream& wheel_file, int64_t time_difference){
     }    
 }
 
+void save_setting (double circumference, int tooth){
+    std::string fileName = "circumference";
+    std::ofstream outputFile(fileName, std::ios::out | std::ios::trunc);
+    if (outputFile.is_open()) {
+        // Zapisujemy zmienna double do pliku
+        outputFile << circumference << std::endl;
 
+        // Zamykamy plik
+        outputFile.close();
+        std::cout << "Saved to file circumferencje: " << fileName << ": "<< circumference<< std::endl;
+    } else {
+        std::cerr << "Błąd podczas otwierania pliku do zapisu: " << fileName << std::endl;
+    }
+
+
+    fileName = "tooth";
+    std::ofstream outputFile_tooth(fileName, std::ios::out | std::ios::trunc);
+    if (outputFile_tooth.is_open()) {
+        // Zapisujemy zmienna int do pliku
+        outputFile_tooth << tooth << std::endl;
+        // Zamykamy plik
+        outputFile_tooth.close();
+        std::cout << "Saved to file circumferencje: " << fileName << ": "<< tooth<< std::endl;
+    } else {
+        std::cerr << "Błąd podczas otwierania pliku do zapisu: " << fileName << std::endl;
+    }
+}
 
 wheel string_to_wheel_obj (std::string string){ 
     wheel wheel;
     
     wheel.wheel_timestamp = std::stoll(string.substr(0, 13));
     
-    std::istringstream stream(string.substr(21));
+    int first_whaal = string.find("|")+1;
+    std::istringstream stream(string.substr(first_whaal));
     std::string token;
 
     std::getline(stream, token, '|');
+    std::string test = token;
     wheel.wheel_frequency = std::stod(token);
 
     std::getline(stream, token, '|');
@@ -128,6 +162,7 @@ if (inputFile.is_open()) {
     } else {
         std::cerr << "Unable to open file: " << filePath << std::endl;
     }
+    return 0;
 }
 
 std::string wheel_obj_to_string (wheel wheel){
