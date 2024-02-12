@@ -35,7 +35,6 @@ int32_t main(int argc, char *argv[]) {
     }
     
 
-    
     std::string wheel_log_path = jsondata["wheel_log"];  
     std::ifstream wheel_file(wheel_log_path);  
     std::string wheel_line;
